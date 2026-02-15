@@ -2,6 +2,8 @@
 
 ZEDX AI is a local desktop AI assistant built with **PySide6** and **Transformers**.
 It provides a multi-chat coding interface with file-aware context, syntax-highlighted code blocks, and live hardware/model monitoring.
+Default configured base model: **Qwen/Qwen2.5-Coder-1.5B-Instruct**.
+Model page: https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct
 
 ## Features
 
@@ -91,10 +93,31 @@ Important AI settings in `AI_Config.json`:
 By default, the app uses:
 
 ```json
+"MODEL_ID": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
 "LOCAL_DIR": "./Model/qwen_local_model"
 ```
 
 Make sure your local model files exist in that folder (or update this path).
+
+## Model Download (Place Inside `ZEDX Model`)
+
+Download the model from Hugging Face and place it in:
+
+```text
+ZEDX Model/Model/qwen_local_model
+```
+
+Hugging Face model link:
+
+- https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct
+
+Example using `huggingface_hub` CLI:
+
+```bash
+pip install -U huggingface_hub
+huggingface-cli download Qwen/Qwen2.5-Coder-1.5B-Instruct \
+  --local-dir "ZEDX Model/Model/qwen_local_model"
+```
 
 ## How File Context Works
 
