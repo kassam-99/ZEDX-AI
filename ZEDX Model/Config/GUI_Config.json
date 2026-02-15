@@ -1,0 +1,12 @@
+{
+  "APP_TITLE": "NeuralIDE",
+  "WINDOW_WIDTH": 1380,
+  "WINDOW_HEIGHT": 820,
+
+  "MAX_BUBBLE_WIDTH": 760,
+
+  "WELCOME_MESSAGE": "Hi! How can I assist you today? I'm here to help with any questions or tasks related to ROS2, ESP32, robotic kinematics, and real-time control systems. Let me know how I can support you further.",
+
+  "AUTO_SCROLL_MODE": "smart",
+  "SCROLL_NEAR_BOTTOM_PX": 60
+}

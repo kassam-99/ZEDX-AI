@@ -1,0 +1,21 @@
+{
+  "MODEL_ID": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+  "LOCAL_DIR": "./Model/qwen_local_model",
+
+  "MAX_TOKENS": 4096,
+  "TEMPERATURE": 0.3,
+
+  "SYSTEM_PROMPT_DEFAULT": "You are a helpful assistant.",
+
+  "STORAGE_DIR": "./History",
+  "CHATS_SUBDIR": "Chats",
+  "FILES_SUBDIR": "Files",
+
+  "MAX_HISTORY_MESSAGES": 10,
+  "MAX_FILE_CHARS": 14000,
+
+  "ALLOWED_TEXT_EXTENSIONS": [
+    ".txt", ".md", ".log", ".py", ".json", ".yaml", ".yml", ".ini", ".cfg",
+    ".c", ".cpp", ".h", ".hpp", ".rs", ".go", ".java", ".js", ".ts", ".html", ".css"
+  ]
+}

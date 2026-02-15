@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+ZEDX Model/History/
+ZEDX Model/Model/qwen_local_model/
+*.pth
+*.safetensors
