@@ -133,10 +133,13 @@ Important AI settings in `AI_Config.json`:
 
 - `MODEL_ID`
 - `LOCAL_DIR`
-- `MAX_TOKENS`
+- `MAX_TOKENS` — maximum tokens generated per reply. The configured value is
+  honored, guarded only by an internal safety ceiling (`MAX_NEW_TOKENS_CEILING`,
+  8192) to prevent runaway generation from a bad config value.
 - `TEMPERATURE`
 - `MAX_HISTORY_MESSAGES`
 - `MAX_FILE_CHARS`
+- `TRUST_REMOTE_CODE` — defaults to `false`. See the security note below.
 
 By default, the app uses:
 
@@ -148,6 +151,15 @@ By default, the app uses:
 Local model files are optional: if `LOCAL_DIR` does not exist, the app falls back to
 `MODEL_ID` and downloads it from the Hugging Face Hub on first run. To force offline
 use, place the model files in that folder (or update this path).
+
+### Security note: `TRUST_REMOTE_CODE`
+
+Models are loaded with `trust_remote_code` set to the value of `TRUST_REMOTE_CODE`
+in `AI_Config.json`, which **defaults to `false`**. When enabled, any custom
+modeling code shipped by the model repo runs as arbitrary Python at load time.
+Because `MODEL_ID` can point at any Hugging Face repo (and is downloaded on first
+run), leave this `false` unless you fully trust the repo. The default model,
+`Qwen/Qwen2.5-Coder-1.5B-Instruct`, does not require remote code.
 
 ## Model Download (Optional)
 

@@ -7,6 +7,11 @@ _MODEL = None
 _TOKENIZER = None
 _MODEL_STATIC_INFO = None
 
+# Safety ceiling for generation length. The configured MAX_TOKENS
+# (settings.max_tokens) is honored up to this cap, which only guards against
+# a pathological config value causing runaway generation.
+MAX_NEW_TOKENS_CEILING = 8192
+
 
 def _build_model_static_info(model, tokenizer, model_path: str) -> Dict[str, Any]:
     params = list(model.parameters())
@@ -39,14 +44,19 @@ def load_ai_model(settings) -> Tuple[Any, Any]:
 
     model_path = settings.local_dir if settings.local_dir else settings.model_id
 
-    _TOKENIZER = AutoTokenizer.from_pretrained(model_path, use_fast=True, trust_remote_code=True)
+    # trust_remote_code executes arbitrary Python shipped by the model repo at
+    # load time. Default off; only enable via TRUST_REMOTE_CODE for repos you
+    # trust. Qwen2.5-Coder (the default model) does not require it.
+    trust_remote = bool(getattr(settings, "trust_remote_code", False))
+
+    _TOKENIZER = AutoTokenizer.from_pretrained(model_path, use_fast=True, trust_remote_code=trust_remote)
 
     device_map = "auto" if torch.cuda.is_available() else None
     torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
     _MODEL = AutoModelForCausalLM.from_pretrained(
         model_path,
-        trust_remote_code=True,
+        trust_remote_code=trust_remote,
         device_map=device_map,
         torch_dtype=torch_dtype,
         low_cpu_mem_usage=True
@@ -133,7 +143,9 @@ def generate_code(history: List[Dict[str, str]], system_prompt: str, settings) -
     if torch.cuda.is_available():
         inputs = {k: v.to(model.device) for k, v in inputs.items()}
 
-    max_new = min(1024, settings.max_tokens)
+    # Honor the configured MAX_TOKENS, guarded only by a high safety ceiling so
+    # the effective limit matches what the monitor and README report.
+    max_new = max(1, min(int(settings.max_tokens), MAX_NEW_TOKENS_CEILING))
 
     pad_token_id = tokenizer.pad_token_id
     if pad_token_id is None:

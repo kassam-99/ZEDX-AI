@@ -5,6 +5,8 @@
   "MAX_TOKENS": 4096,
   "TEMPERATURE": 0.3,
 
+  "TRUST_REMOTE_CODE": false,
+
   "SYSTEM_PROMPT_DEFAULT": "You are a helpful assistant.",
 
   "STORAGE_DIR": "./History",

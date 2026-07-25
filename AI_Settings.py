@@ -85,6 +85,12 @@ class AISettings:
         return int(self.get_ai("MAX_TOKENS", 4096))
 
     @property
+    def trust_remote_code(self) -> bool:
+        # Off by default: loading a model with trust_remote_code=True runs
+        # arbitrary Python shipped by the model repo. Opt in only for trusted repos.
+        return bool(self.get_ai("TRUST_REMOTE_CODE", False))
+
+    @property
     def temperature(self) -> float:
         return float(self.get_ai("TEMPERATURE", 0.3))
 
