@@ -1,9 +1,50 @@
 # ZEDX AI
 
-ZEDX AI is a local desktop AI assistant built with **PySide6** and **Transformers**.
+ZEDX AI is a local-first desktop AI assistant built with **PySide6** and **Transformers**
+(the running app window is titled **NeuralIDE**).
 It provides a multi-chat coding interface with file-aware context, syntax-highlighted code blocks, and live hardware/model monitoring.
 Default configured base model: **Qwen/Qwen2.5-Coder-1.5B-Instruct**.
 Model page: https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct
+
+## Architecture
+
+```mermaid
+flowchart TD
+    User([User])
+
+    subgraph UI["Desktop UI (PySide6)"]
+        GUI["GUI_App.py<br/>MainWindow, chat bubbles,<br/>code syntax highlighting"]
+        Monitor["Hardware Monitor popup<br/>hardware_monitor.py"]
+    end
+
+    subgraph Session["Chat / session layer"]
+        CM["ChatManager<br/>AI_storage.py"]
+        Store[("JSON history<br/>History/Chats, History/Files")]
+    end
+
+    subgraph Inference["Model (AI_model.py)"]
+        Loader["load_ai_model()<br/>local dir, else HF Hub download"]
+        Gen["generate_code()<br/>Transformers on CPU / CUDA"]
+    end
+
+    User -->|message + uploaded files| GUI
+    GUI -->|create / select / rename / pin| CM
+    CM <-->|read / write| Store
+    GUI -->|persona + history + file context| Gen
+    Loader --> Gen
+    Gen -->|generated text| GUI
+    GUI -->|rendered bubbles + highlighted code| User
+
+    GUI -.->|open| Monitor
+    Gen -.->|model runtime stats| Monitor
+    Monitor -.->|CPU / RAM / VRAM / process| GUI
+```
+
+<!--
+Screenshot slot -- a screenshot of the running app really helps here.
+Drop an image at docs/screenshots/main.png and uncomment the line below:
+![NeuralIDE main window](docs/screenshots/main.png)
+-->
 
 ## Features
 
@@ -43,6 +84,8 @@ ZEDX-AI/
     AI_Config.json           # AI/runtime settings
     GUI_Config.json          # UI behavior settings
     Theme_QSS.json           # Theme styles
+  docs/
+    screenshots/             # Screenshots used in the README
   History/                   # Created at runtime (git-ignored)
     Chats/                   # Chat JSON files
     Files/                   # Uploaded chat files
@@ -61,6 +104,7 @@ If `LOCAL_DIR` does not exist, the app automatically downloads and loads
   - `PySide6`
   - `torch`
   - `transformers`
+  - `accelerate` (needed for GPU `device_map="auto"`; harmless on CPU-only setups)
   - `psutil` (recommended for full monitor stats)
 
 Install (from the project root):
@@ -74,7 +118,7 @@ pip install -r requirements.txt
 From the project root:
 
 ```bash
-python GUI_App.py
+python3 GUI_App.py
 ```
 
 ## Configuration
@@ -101,7 +145,9 @@ By default, the app uses:
 "LOCAL_DIR": "./Model/qwen_local_model"
 ```
 
-Make sure your local model files exist in that folder (or update this path).
+Local model files are optional: if `LOCAL_DIR` does not exist, the app falls back to
+`MODEL_ID` and downloads it from the Hugging Face Hub on first run. To force offline
+use, place the model files in that folder (or update this path).
 
 ## Model Download (Optional)
 
