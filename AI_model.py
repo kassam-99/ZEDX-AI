@@ -135,14 +135,24 @@ def generate_code(history: List[Dict[str, str]], system_prompt: str, settings) -
 
     max_new = min(1024, settings.max_tokens)
 
+    pad_token_id = tokenizer.pad_token_id
+    if pad_token_id is None:
+        pad_token_id = tokenizer.eos_token_id
+
+    gen_kwargs: Dict[str, Any] = {
+        "max_new_tokens": max_new,
+        "pad_token_id": pad_token_id,
+    }
+    # Only pass sampling params when actually sampling; passing temperature with
+    # do_sample=False triggers warnings/errors on recent transformers versions.
+    if settings.temperature and settings.temperature > 0:
+        gen_kwargs["do_sample"] = True
+        gen_kwargs["temperature"] = float(settings.temperature)
+    else:
+        gen_kwargs["do_sample"] = False
+
     with torch.no_grad():
-        out = model.generate(
-            **inputs,
-            max_new_tokens=max_new,
-            do_sample=True if settings.temperature > 0 else False,
-            temperature=settings.temperature,
-            pad_token_id=tokenizer.eos_token_id
-        )
+        out = model.generate(**inputs, **gen_kwargs)
 
     # only decode newly generated part
     input_len = inputs["input_ids"].shape[-1]

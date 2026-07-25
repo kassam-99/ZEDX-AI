@@ -72,7 +72,13 @@ class AISettings:
 
     @property
     def local_dir(self) -> str:
-        return resolve_path(self.base_dir, str(self.get_ai("LOCAL_DIR", "")))
+        raw = str(self.get_ai("LOCAL_DIR", "")).strip()
+        if not raw:
+            return ""
+        resolved = resolve_path(self.base_dir, raw)
+        # Only use the local directory if it actually exists; otherwise callers
+        # fall back to MODEL_ID and download from the Hugging Face Hub.
+        return resolved if os.path.isdir(resolved) else ""
 
     @property
     def max_tokens(self) -> int:

@@ -1,0 +1,6 @@
+PySide6>=6.5
+torch>=2.0
+transformers>=4.40
+psutil>=5.9
+# Required when running on GPU (device_map="auto"); harmless on CPU-only setups.
+accelerate>=0.26

@@ -1,0 +1,40 @@
+# Secrets / environment
+.env
+.env.*
+*.key
+*.pem
+secrets.json
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+
+# App-generated runtime data (chats, uploaded files, downloaded model)
+History/
+Model/
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth

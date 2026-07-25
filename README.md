@@ -31,23 +31,27 @@ Model page: https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct
 ## Project Structure
 
 ```text
-ZEDX Model/
-  GUI_App.py                 # Main desktop app
+ZEDX-AI/
+  GUI_App.py                 # Main desktop app (entry point)
   AI_model.py                # Model loading + generation
   AI_storage.py              # Chat/file persistence
   AI_Settings.py             # Settings loader
   AI_config.py               # Config helpers
   hardware_monitor.py        # Hardware/model monitoring helpers
+  requirements.txt           # Python dependencies
   Config/
     AI_Config.json           # AI/runtime settings
     GUI_Config.json          # UI behavior settings
     Theme_QSS.json           # Theme styles
-  History/
+  History/                   # Created at runtime (git-ignored)
     Chats/                   # Chat JSON files
     Files/                   # Uploaded chat files
-  Model/
+  Model/                     # Optional local model files (git-ignored)
     qwen_local_model/        # Local model/tokenizer files
 ```
+
+If `LOCAL_DIR` does not exist, the app automatically downloads and loads
+`MODEL_ID` from the Hugging Face Hub instead.
 
 ## Requirements
 
@@ -59,27 +63,27 @@ ZEDX Model/
   - `transformers`
   - `psutil` (recommended for full monitor stats)
 
-Install:
+Install (from the project root):
 
 ```bash
-pip install PySide6 torch transformers psutil
+pip install -r requirements.txt
 ```
 
 ## Run
 
-From project root:
+From the project root:
 
 ```bash
-python "ZEDX Model/GUI_App.py"
+python GUI_App.py
 ```
 
 ## Configuration
 
 Main config files:
 
-- `ZEDX Model/Config/AI_Config.json`
-- `ZEDX Model/Config/GUI_Config.json`
-- `ZEDX Model/Config/Theme_QSS.json`
+- `Config/AI_Config.json`
+- `Config/GUI_Config.json`
+- `Config/Theme_QSS.json`
 
 Important AI settings in `AI_Config.json`:
 
@@ -99,12 +103,14 @@ By default, the app uses:
 
 Make sure your local model files exist in that folder (or update this path).
 
-## Model Download (Place Inside `ZEDX Model`)
+## Model Download (Optional)
 
-Download the model from Hugging Face and place it in:
+The model is loaded automatically from the Hugging Face Hub on first run using
+`MODEL_ID`. If you prefer a local copy (for offline use), download it into the
+`LOCAL_DIR` path configured in `AI_Config.json`:
 
 ```text
-ZEDX Model/Model/qwen_local_model
+Model/qwen_local_model
 ```
 
 Hugging Face model link:
@@ -116,7 +122,7 @@ Example using `huggingface_hub` CLI:
 ```bash
 pip install -U huggingface_hub
 huggingface-cli download Qwen/Qwen2.5-Coder-1.5B-Instruct \
-  --local-dir "ZEDX Model/Model/qwen_local_model"
+  --local-dir "Model/qwen_local_model"
 ```
 
 ## How File Context Works
@@ -145,5 +151,5 @@ It refreshes periodically and shows system + model runtime usage.
 
 ## Notes
 
-- Chat history and uploaded files are stored locally under `ZEDX Model/History/`.
+- Chat history and uploaded files are stored locally under `History/` (git-ignored).
 - This project is designed for local-first development workflows.
